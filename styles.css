@@ -1,0 +1,187 @@
+/* General Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Header */
+header {
+    background-color: #666;
+    padding: 30px;
+    text-align: center;
+    font-size: 35px;
+    color: white;
+}
+
+/* Section layout with flexbox */
+section {
+    display: flex;
+    align-items: stretch; /* Đảm bảo chiều cao bằng nhau */
+    height: 100vh; /* Chiều cao toàn màn hình */
+    margin: 0;
+}
+
+/* Navigation menu */
+nav {
+    flex: 1;
+    background-color: #ccc;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 200px;
+    position: relative;
+    left: -20px; /* Lùi về trái */
+    height: 100%;
+}
+
+nav li {
+    margin-bottom: 20px;
+}
+
+a {
+    font-size: 5em; /* Kích thước chữ lớn */
+    text-decoration: none; /* Bỏ gạch chân */
+    color: #000; /* Màu chữ đen */
+    cursor: pointer;
+    background-color: #fff; /* Màu nền */
+}
+
+/* Article content */
+article {
+    flex: 3;
+    padding: 5%;
+    background-color: #f1f1f1;
+    overflow-y: auto;
+}
+
+/* Table styles */
+table, td {
+    border: solid black;
+    text-align: center;
+}
+
+/* Footer */
+footer {
+    background-color: #777;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    nav, article {
+        width: 100%;
+        height: auto;
+    }
+}
+aside {
+    position: fixed;
+    right: -450px; /* Ẩn thanh nav ban đầu */
+    top: 0;
+    width: 450px;
+    height: 100%;
+    background-color: #f4f4f4;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    transition: right 0.3s ease; /* Hiệu ứng trượt */
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 10; /* Hiện trên các thành phần khác */
+}
+
+aside.visible {
+    right: 0; /* Hiển thị khi có class "visible" */
+}
+
+aside h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+aside button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: #666;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+aside button:hover {
+    background-color: #444;
+}
+.task-info {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    color: green;
+}
+body {
+    font-family: Arial, sans-serif;
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+nav ul li a {
+    cursor: pointer;
+    text-decoration: underline;
+    color: blue;
+}
+
+table {
+    margin: 20px auto;
+    width: 90%;
+    border-collapse: collapse;
+}
+
+td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    vertical-align: top;
+}
+
+td button {
+    margin-top: 10px;
+}
+
+.task-info {
+    background-color: #f0f0f0;
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.task-info strong {
+    color: #007bff;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #f8f9fa;
+    margin-top: 20px;
+}

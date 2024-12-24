@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bảng kế hoạch</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+        }
+
+        nav {
+            float: left;
+            width: 20%;
+            background: #f1f1f1;
+            padding: 20px;
+            height: 1050px;
+            box-sizing: border-box;
+        }
+
+        article {
+            float: left;
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        aside {
+            position: fixed;
+            top: 20%;
+            right: -400px;
+            width: 300px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: 0.5s;
+        }
+
+        aside.visible {
+            right: 0;
+        }
+
+        footer {
+            clear: both;
+            text-align: center;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            vertical-align: top;
+            width: calc(100% / 6);
+            min-height: 250px;
+            height: auto;
+            word-wrap: break-word;
+        }
+
+        table td {
+            min-height: 100px;
+            position: relative;
+            height: 160px;
+        }
+
+        table td button {
+            margin-top: 10px;
+        }
+
+        .task-list {
+            padding: 0;
+            margin: 10px 0 0 0;
+            list-style-type: none;
+        }
+
+        .task-list li {
+            margin-bottom: 5px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        .task-list li button {
+            margin-left: 10px;
+            color: red;
+        }
+
+        a {
+            font-size: 100px;
+            text-decoration: none;
+            color: rgb(0, 0, 0);
+            font-weight: bold;
+        }
+
+        strong {
+            margin-left: 50px;
+        }
+
+        #countdown {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Bảng kế hoạch</h2>
+    </header>
+    
+    <section>
+        <nav>
+            <ul><br><br><br><br><br><br><br>
+                <li><a href="#" onclick="showMonth()">Tháng</a></li><br><br><br><br><br><br><br><br><br><br>
+                <li><a href="#" onclick="showWeek()">Tuần</a></li><br><br><br><br><br><br><br><br><br><br>
+                <li><a href="#" onclick="showDay()">Ngày</a></li>
+            </ul>
+        </nav>
+        <article id="main-content">
+            <!-- Nội dung sẽ được cập nhật qua JavaScript -->
+        </article>
+
+        <aside id="right-nav">
+            <h3>Thêm Lịch Trình</h3>
+            <form>
+                <label for="task">Nội dung:</label>
+                <input type="text" id="task" name="task" placeholder="Nhập nội dung công việc" style="width: 100%; margin-bottom: 10px;">
+                <label for="time">Thời gian:</label>
+                <input type="time" id="time" name="time" style="width: 100%; margin-bottom: 10px;">
+                <button type="button" onclick="saveTask(event)">Lưu</button>
+                <button type="button" onclick="closeNav()">Đóng</button>
+            </form>
+        </aside>
+    </section>
+    
+    <footer>
+        <p>Footer</p>
+    </footer>
+
+    <script>
+        function openNav(event) {
+            document.getElementById('right-nav').classList.add('visible');
+            window.currentButton = event.target;
+        }
+
+        function closeNav() {
+            document.getElementById('right-nav').classList.remove('visible');
+        }
+
+        function saveTask(event) {
+            const task = document.getElementById('task').value;
+            const time = document.getElementById('time').value;
+
+            if (task && time) {
+                const buttonCell = window.currentButton.closest('td');
+                const day = buttonCell.innerText.split('\n')[0];
+
+                let tasks = JSON.parse(localStorage.getItem('tasks')) || {};
+                if (!tasks[day]) {
+                    tasks[day] = [];
+                }
+                tasks[day].push({ time, task });
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+
+                displayTask(buttonCell, time, task, day);
+                closeNav();
+                alert(`Đã lưu công việc: ${task} vào lúc ${time}`);
+
+                // Cập nhật bộ đếm ngược sau khi lưu công việc
+                updateCountdown();
+            } else {
+                alert("Vui lòng nhập đầy đủ thông tin!");
+            }
+        }
+
+        function displayTask(buttonCell, time, task, day) {
+            let taskList = buttonCell.querySelector('.task-list');
+            if (!taskList) {
+                taskList = document.createElement('ul');
+                taskList.className = 'task-list';
+                buttonCell.appendChild(taskList);
+            }
+
+            const taskItem = document.createElement('li');
+            taskItem.innerHTML = `
+                <strong>${time}</strong> - ${task}
+                <button onclick="deleteTask(this, '${day}', '${time}', '${task}')">Xóa</button>
+            `;
+            taskList.appendChild(taskItem);
+        }
+
+        function deleteTask(deleteButton, day, time, task) {
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || {};
+            if (tasks[day]) {
+                tasks[day] = tasks[day].filter(item => item.time !== time || item.task !== task);
+                if (tasks[day].length === 0) {
+                    delete tasks[day];
+                }
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+            deleteButton.parentElement.remove();
+            alert(`Đã xóa công việc: ${task}`);
+
+            // Cập nhật lại bộ đếm ngược sau khi xóa công việc
+            updateCountdown();
+        }
+
+        function updateCountdown() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || {};
+            let nearestTaskTime = null;
+
+            // Tìm công việc gần nhất
+            for (const day in tasks) {
+                tasks[day].forEach(({ time }) => {
+                    const taskTime = new Date(`${new Date().toLocaleDateString()} ${time}`);
+                    if (!nearestTaskTime || taskTime < nearestTaskTime) {
+                        nearestTaskTime = taskTime;
+                    }
+                });
+            }
+
+            if (nearestTaskTime) {
+                const now = new Date();
+                const timeDiff = nearestTaskTime - now; // Thời gian còn lại tính bằng milliseconds
+
+                if (timeDiff <= 0) {
+                    document.getElementById('countdown').innerHTML = 'Không có công việc sắp tới.';
+                } else {
+                    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                    document.getElementById('countdown').innerHTML = `
+                        Bộ đếm ngược đến công việc gần nhất: ${hours} giờ ${minutes} phút ${seconds} giây
+                    `;
+                }
+            } else {
+                document.getElementById('countdown').innerHTML = 'Không có công việc sắp tới.';
+            }
+        }
+
+        // Hàm tải công việc và hiển thị bộ đếm ngược ban đầu
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || {};
+            const cells = document.querySelectorAll('#main-content td');
+
+            cells.forEach((cell) => {
+                const day = cell.innerText.split('\n')[0];
+                if (tasks[day]) {
+                    tasks[day].forEach(({ time, task }) => {
+                        displayTask(cell, time, task, day);
+                    });
+                }
+            });
+
+            // Cập nhật bộ đếm ngược khi tải công việc
+            updateCountdown();
+        }
+
+        function showMonth() {
+            document.getElementById('main-content').innerHTML = `
+                <h3>Lịch theo tháng</h3>
+                <table>
+                    ${generateMonthRows()}
+                </table>`;
+            loadTasks();
+        }
+
+        function generateMonthRows() {
+            let rows = '';
+            for (let i = 1; i <= 30; i += 6) {
+                rows += '<tr>';
+                for (let j = i; j < i + 6 && j <= 30; j++) {
+                    rows += `
+                        <td>Ngày ${j}<br>
+                            <button onclick="openNav(event)">Thêm lịch trình</button>
+                        </td>`;
+                }
+                rows += '</tr>';
+            }
+            return rows;
+        }
+
+        function showWeek() {
+            document.getElementById('main-content').innerHTML = `
+                <h3>Lịch theo tuần</h3>
+                <table>
+                    <tr>
+                        <th>Thứ 2</th>
+                        <th>Thứ 3</th>
+                        <th>Thứ 4</th>
+                        <th>Thứ 5</th>
+                        <th>Thứ 6</th>
+                        <th>Thứ 7</th>
+                        <th>Chủ nhật</th>
+                    </tr>
+                    <tr>
+                        ${'<td><button onclick="openNav(event)">Thêm lịch trình</button></td>'.repeat(7)}
+                    </tr>
+                </table>`;
+            loadTasks();
+        }
+
+        function showDay() {
+            document.getElementById('main-content').innerHTML = `
+                <h3>Lịch theo ngày</h3>
+                <table>
+                    <tr>
+                        <td><button onclick="openNav(event)">Thêm công việc</button></td>
+                    </tr>
+                </table>`;
+            loadTasks();
+        }
+
+        document.addEventListener('DOMContentLoaded', showMonth);
+    </script>
+
+    <!-- Thêm phần hiển thị bộ đếm ngược -->
+    <div id="countdown"></div>
+</body>
+</html>
